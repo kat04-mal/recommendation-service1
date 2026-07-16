@@ -5,7 +5,6 @@ public final class ProductType {
     private ProductType() {
     }
 
-
     public static final String DEBIT = "DEBIT";
 
     public static final String CREDIT = "CREDIT";

@@ -70,6 +70,7 @@ public class TopSavingRule implements RecommendationRuleSet {
 
             return Optional.of(
                     new RecommendationDto(
+                            null,
                             PRODUCT_ID,
                             "Топ накопление",
                             """

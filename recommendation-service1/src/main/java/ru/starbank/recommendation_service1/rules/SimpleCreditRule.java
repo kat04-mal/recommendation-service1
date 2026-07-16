@@ -50,6 +50,7 @@ public class SimpleCreditRule implements RecommendationRuleSet {
 
             return Optional.of(
                     new RecommendationDto(
+                            null,
                             PRODUCT_ID,
                             "Простой кредит",
                             "Откройте мир выгодных кредитов с нами!\n" +

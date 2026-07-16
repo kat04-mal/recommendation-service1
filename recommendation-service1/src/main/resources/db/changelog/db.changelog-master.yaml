@@ -1,0 +1,7 @@
+databaseChangeLog:
+
+  - include:
+      file: db/changelog/001-create-rule-tables.yaml
+
+  - include:
+      file: db/changelog/002-change-arguments-to-jsonb.yaml

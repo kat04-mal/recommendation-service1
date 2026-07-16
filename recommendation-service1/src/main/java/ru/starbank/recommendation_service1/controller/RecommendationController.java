@@ -6,7 +6,6 @@ import ru.starbank.recommendation_service1.service.RecommendationService;
 
 import java.util.UUID;
 
-
 @RestController
 @RequestMapping("/recommendation")
 public class RecommendationController {

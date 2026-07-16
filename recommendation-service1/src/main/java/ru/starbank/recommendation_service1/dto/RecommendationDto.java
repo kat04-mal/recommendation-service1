@@ -1,36 +1,25 @@
 package ru.starbank.recommendation_service1.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.UUID;
 
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class RecommendationDto {
 
-    private UUID id;
-    private String name;
-    private String text;
+    private Long id;
 
+    private UUID productId;
 
-    public RecommendationDto() {
-    }
+    private String productName;
 
+    private String productText;
 
-    public RecommendationDto(UUID id, String name, String text) {
-        this.id = id;
-        this.name = name;
-        this.text = text;
-    }
-
-
-    public UUID getId() {
-        return id;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-
-    public String getText() {
-        return text;
-    }
 }

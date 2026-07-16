@@ -1,0 +1,12 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 002-change-arguments-to-jsonb
+      author: starbank
+
+      changes:
+
+        - modifyDataType:
+            tableName: rule_query
+            columnName: arguments
+            newDataType: JSONB
