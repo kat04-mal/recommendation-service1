@@ -1,8 +1,8 @@
 package ru.starbank.recommendation_service1.service;
 
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.starbank.recommendation_service1.entity.RuleStatsEntity;
 import ru.starbank.recommendation_service1.repository.rule.RuleRepository;
 import ru.starbank.recommendation_service1.dto.rule.RuleCreateRequest;
 import ru.starbank.recommendation_service1.dto.rule.RuleListResponse;
@@ -45,33 +45,31 @@ public class RuleService {
 
 
         for (RuleQueryDto dto : request.getRule()) {
-
-
             RuleQueryEntity query = new RuleQueryEntity();
-
             query.setRule(rule);
             query.setQuery(dto.getQuery());
             query.setArguments(dto.getArguments());
             query.setNegate(dto.isNegate());
-
-
             queries.add(query);
         }
 
-
         rule.setRule(queries);
 
+        RuleStatsEntity stats = new RuleStatsEntity();
+
+        stats.setRule(rule);
+        stats.setCount(0);
+
+        rule.setStats(stats);
 
         RuleEntity saved =
                 repository.save(rule);
-
 
         return mapper.toResponse(saved);
     }
 
     @Transactional(readOnly = true)
     public RuleListResponse getRules() {
-
 
         return new RuleListResponse(
                 repository.findAll()
@@ -81,9 +79,12 @@ public class RuleService {
         );
     }
 
+    @Transactional
     public void deleteRule(Long id) {
 
-        repository.deleteById(id);
-
+        RuleEntity rule =
+                repository.findById(id)
+                        .orElseThrow();
+        repository.delete(rule);
     }
 }

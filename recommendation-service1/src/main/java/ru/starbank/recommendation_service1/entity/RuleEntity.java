@@ -34,4 +34,11 @@ public class RuleEntity {
             fetch = FetchType.EAGER
     )
     private List<RuleQueryEntity> rule = new ArrayList<>();
+
+    @OneToOne(
+            mappedBy = "rule",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private RuleStatsEntity stats;
 }
