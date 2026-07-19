@@ -39,31 +39,46 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
         }
         String text =
                 update.getMessage()
-                        .getText();
+                        .getText()
+                        .trim();
+
         String response;
-        if (text.startsWith("/recommend")) {
-            String[] parts =
-                    text.split(" ");
+
+        String[] parts =
+                text.split("\\s+");
+
+        if ("/start".equals(parts[0])) {
+
+            response =
+                    """
+                    Добро пожаловать в StarBank Recommendation Bot.
+        
+                    Доступная команда:
+        
+                    /recommend username
+        
+                    Получить персональные рекомендации.
+                    """;
+
+        }
+        else if ("/recommend".equals(parts[0])) {
+
             if (parts.length != 2) {
+
                 response =
                         "Используйте команду:\n/recommend username";
 
             } else {
+
                 response =
                         service.recommend(parts[1]);
             }
 
-        } else {
+        }
+        else {
+
             response =
-                    """
-                    Добро пожаловать в StarBank Recommendation Bot.
-
-                    Доступная команда:
-
-                    /recommend username
-
-                    Получить персональные рекомендации.
-                    """;
+                    "Неизвестная команда.\nИспользуйте /recommend username";
         }
         SendMessage message =
                 new SendMessage();
