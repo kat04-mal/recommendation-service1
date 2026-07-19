@@ -99,7 +99,7 @@ class RuleStatsServiceTest {
                 10L,
                 response.getStats()
                         .get(0)
-                        .getRule_id()
+                        .getRuleId()
         );
 
 
