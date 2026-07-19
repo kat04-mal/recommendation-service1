@@ -14,7 +14,11 @@ import ru.starbank.recommendation_service1.mapper.RuleMapper;
 
 import java.util.ArrayList;
 
-
+/**
+ * Сервис управления динамическими правилами.
+ *
+ * <p>Отвечает за создание, получение и удаление правил.</p>
+ */
 @Service
 public class RuleService {
 
@@ -30,6 +34,12 @@ public class RuleService {
         this.mapper = mapper;
     }
 
+    /**
+     * Создает новое правило рекомендации.
+     *
+     * @param request данные правила
+     * @return сохраненное правило
+     */
     @Transactional
     public RuleResponse createRule(RuleCreateRequest request) {
 
@@ -68,6 +78,11 @@ public class RuleService {
         return mapper.toResponse(saved);
     }
 
+    /**
+     * Возвращает все существующие правила.
+     *
+     * @return список правил
+     */
     @Transactional(readOnly = true)
     public RuleListResponse getRules() {
 
@@ -79,6 +94,11 @@ public class RuleService {
         );
     }
 
+    /**
+     * Удаляет правило по идентификатору.
+     *
+     * @param id идентификатор правила
+     */
     @Transactional
     public void deleteRule(Long id) {
 

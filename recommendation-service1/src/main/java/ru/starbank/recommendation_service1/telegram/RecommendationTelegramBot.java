@@ -7,6 +7,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.starbank.recommendation_service1.config.TelegramBotConfig;
 import ru.starbank.recommendation_service1.service.TelegramRecommendationService;
 
+/**
+ * Telegram-бот для получения рекомендаций пользователей.
+ *
+ * <p>Обрабатывает команды пользователей
+ * и отправляет персональные рекомендации.</p>
+ */
 @Component
 public class RecommendationTelegramBot extends TelegramLongPollingBot {
 
@@ -51,17 +57,16 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
 
             response =
                     """
-                    Добро пожаловать в StarBank Recommendation Bot.
-        
-                    Доступная команда:
-        
-                    /recommend username
-        
-                    Получить персональные рекомендации.
-                    """;
+                            Добро пожаловать в StarBank Recommendation Bot.
+                            
+                            Доступная команда:
+                            
+                            /recommend username
+                            
+                            Получить персональные рекомендации.
+                            """;
 
-        }
-        else if ("/recommend".equals(parts[0])) {
+        } else if ("/recommend".equals(parts[0])) {
 
             if (parts.length != 2) {
 
@@ -74,8 +79,7 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
                         service.recommend(parts[1]);
             }
 
-        }
-        else {
+        } else {
 
             response =
                     "Неизвестная команда.\nИспользуйте /recommend username";
@@ -90,8 +94,7 @@ public class RecommendationTelegramBot extends TelegramLongPollingBot {
         message.setText(response);
         try {
             execute(message);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

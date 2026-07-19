@@ -9,6 +9,16 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Статическое правило рекомендации продукта "Топ накопление".
+ *
+ * <p>Правило срабатывает, если:
+ * <ul>
+ *     <li>у пользователя есть дебетовый продукт;</li>
+ *     <li>сумма накоплений или депозитов >= 50000;</li>
+ *     <li>сумма пополнений превышает сумму снятий.</li>
+ * </ul>
+ */
 @Component
 public class TopSavingRule implements RecommendationRuleSet {
 
@@ -21,6 +31,13 @@ public class TopSavingRule implements RecommendationRuleSet {
         this.repository = repository;
     }
 
+    /**
+     * Проверяет выполнение условий рекомендации.
+     *
+     * @param userId идентификатор пользователя
+     * @return рекомендация, если правило выполнено,
+     * иначе Optional.empty()
+     */
     @Override
     public Optional<RecommendationDto> check(UUID userId) {
 

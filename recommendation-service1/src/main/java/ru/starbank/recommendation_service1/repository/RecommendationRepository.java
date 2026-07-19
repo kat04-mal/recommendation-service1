@@ -8,6 +8,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Репозиторий для получения данных пользователей,
+ * продуктов и транзакций.
+ */
 @Repository
 public class RecommendationRepository {
 

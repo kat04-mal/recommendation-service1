@@ -1,5 +1,6 @@
 package ru.starbank.recommendation_service1.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.UUID;
 @Getter
 public class RecommendationResponse {
 
+    @JsonProperty("user_id")
     private final UUID userId;
 
     private final List<RecommendationDto> recommendations;

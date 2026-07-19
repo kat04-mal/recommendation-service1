@@ -1,19 +1,21 @@
-# StarBank Recommendation Service
+#  Recommendation Service
 
 ## Описание проекта
 
-**StarBank Recommendation Service** — это backend-приложение для формирования персональных рекомендаций банковских продуктов пользователям.
+**Recommendation Service** — backend-приложение для формирования персональных рекомендаций банковских продуктов пользователям.
 
-Сервис анализирует данные пользователей и на основании набора правил формирует список подходящих продуктов.
+Сервис анализирует данные пользователей, банковских продуктов и транзакций и формирует рекомендации на основе набора правил.
 
-В системе реализованы:
+В приложении реализованы:
 
-- статические правила рекомендаций, встроенные в код приложения;
+- получение рекомендаций через REST API;
+- статические правила рекомендаций, реализованные в коде;
 - динамические правила рекомендаций, хранящиеся в PostgreSQL;
-- REST API для получения рекомендаций и управления правилами;
-- Telegram-бот для получения персональных рекомендаций;
+- управление правилами через REST API;
 - статистика срабатывания правил;
-- кеширование результатов рекомендаций.
+- кеширование результатов рекомендаций;
+- Telegram-бот для получения рекомендаций пользователями;
+- management API для управления приложением.
 
 
 ---
@@ -28,6 +30,7 @@
 - Spring Data JPA
 - Hibernate ORM
 - Lombok
+- Maven
 
 
 ## Базы данных
@@ -37,35 +40,45 @@
 
 ### H2 Database
 
-H2 используется для хранения пользовательских данных и транзакционной информации.
+Используется для хранения пользовательских данных и транзакционной информации.
 
-Основные таблицы:
 
-- users
-- products
-- transactions
-- spatial_ref_sys
+Основные данные:
 
+- пользователи;
+- банковские продукты;
+- транзакции.
+
+
+Конфигурация:
+
+```
+jdbc:h2:file:./transaction
+```
+
+
+---
 
 ### PostgreSQL
 
-PostgreSQL используется для хранения динамических правил рекомендаций.
+Используется для хранения динамических правил рекомендаций и статистики их выполнения.
+
 
 Основные таблицы:
 
-- recommendation_rule
-- rule_query
-- rule_stats
+- `recommendation_rule`
+- `rule_query`
+- `rule_stats`
 
+
+---
 
 ## Миграции базы данных
 
-Для управления структурой базы данных используется:
-
-- Liquibase
+Для управления структурой PostgreSQL используется Liquibase.
 
 
-Файлы миграций находятся:
+Файлы миграций:
 
 ```
 src/main/resources/db/changelog
@@ -87,285 +100,117 @@ src/main/resources/db/changelog
 
 ---
 
-# Функциональные возможности
-
-
-## Получение рекомендаций
-
-Пользователь может получить персональные рекомендации банковских продуктов.
-
-
-При формировании рекомендаций используются:
-
-
-### Статические правила
-
-Правила реализованы непосредственно в коде приложения.
-
-Примеры:
-
-- TopSavingRule
-- SimpleCreditRule
-- Invest500Rule
-
-
-### Динамические правила
-
-Правила хранятся в PostgreSQL и могут изменяться менеджером без изменения кода.
-
-
----
-
-# Telegram Bot
-
-
-В проект интегрирован Telegram-бот.
-
-
-Пользователь может получить рекомендации командой:
-
-
-```
-/recommend username
-```
-
-
-Пример ответа:
-
-```
-Здравствуйте Иван Иванов
-
-Новые продукты для вас:
-
-- Топ накопление
-- Простой кредит
-```
-
-
-Если пользователь отправляет неизвестную команду, бот показывает справку.
-
-
----
-
-# Управление системой
-
-
-Для внешних систем реализованы management endpoints.
-
-
-Поддерживается:
-
-
-## Очистка кеша
-
-
-```
-POST /management/clear-caches
-```
-
-
-После выполнения происходит очистка кеша рекомендаций.
-
-
-## Информация о приложении
-
-
-```
-GET /management/info
-```
-
-
-Возвращает:
-
-- название приложения;
-- версию.
-
-
----
-
 # Архитектура приложения
+
+Приложение построено по многослойной архитектуре:
+
+
+```
+Controller Layer
+
+        |
+
+Service Layer
+
+        |
+
+Rules Layer
+
+        |
+
+Repository Layer
+
+        |
+
+Database Layer
+```
 
 
 Основные компоненты:
 
 
-```
-                         Пользователь
-                              |
-                              |
-                 REST API / Telegram Bot
-                              |
-                              v
-
-
-+------------------------------------------------+
-
-              Recommendation Service
-
-
-+------------------------------------------------+
-
- Controller Layer
-
- - RecommendationController
- - ManagementController
- - RuleController
-
-
- Service Layer
-
- - RecommendationService
- - RuleService
- - RuleStatsService
- - UserService
-
-
- Rules
-
- - Static Rules
-     - TopSavingRule
-     - SimpleCreditRule
-     - Invest500Rule
-
-
- - Dynamic Rules
-     - DynamicRuleService
-
-
- Repository Layer
-
-
- Entity Layer
-
-
-+------------------------------------------------+
-
-              |                       |
-
-              v                       v
-
-
-          H2 Database            PostgreSQL
-
-
-       users                    recommendation_rule
-
-       products                 rule_query
-
-       transactions             rule_stats
-
+## Controllers
 
 ```
+RecommendationController
+RuleController
+RuleStatsController
+ManagementController
+```
+
+
+## Services
+
+```
+RecommendationService
+RuleService
+RuleStatsService
+```
+
+
+## Rules
+
+### Статические правила
+
+Правила реализованы непосредственно в коде:
+
+```
+TopSavingRule
+
+SimpleCreditRule
+
+Invest500Rule
+```
+
+
+### Динамические правила
+
+Правила хранятся в PostgreSQL и управляются через REST API.
 
 
 ---
 
-# Алгоритм формирования рекомендаций
+# Функциональные возможности
 
 
-1. Пользователь отправляет запрос.
-
-2. RecommendationService получает идентификатор пользователя.
-
-3. Проверяется наличие результата в кеше.
-
-4. Если результат найден:
-
-```
-возвращается кешированный список рекомендаций
-```
+## Получение рекомендаций
 
 
-5. Если результата нет:
-
-Выполняются:
-
-
-- статические правила;
-- динамические правила.
-
-
-6. Подходящие рекомендации объединяются.
-
-7. Результат сохраняется в кеш.
-
-8. Пользователь получает ответ.
-
-
----
-
-# Структура проекта
+Endpoint:
 
 
 ```
-src/main/java/ru/starbank/recommendation_service1
-
-
-├── controller
-
-│
-├── service
-
-│
-├── entity
-
-│
-├── repository
-
-│
-├── dto
-
-│
-├── mapper
-
-│
-├── rules
-
-│   ├── static rules
-│   └── dynamic rules
-
-│
-├── telegram
-
-│
-└── config
-
+GET /recommendation/{userId}
 ```
 
 
----
-
-# REST API
-
-
-## Recommendations
-
-
-Получение рекомендаций пользователя:
-
+Параметр:
 
 ```
-GET /recommendations/{userId}
+userId — UUID пользователя
 ```
 
 
-Ответ:
+Пример ответа:
+
 
 ```json
-[
-  {
-    "id": 1,
-    "productId": "uuid",
-    "productName": "Топ накопление",
-    "productText": "Описание продукта"
-  }
-]
+{
+  "userId": "550e8400-e29b-41d4-a716-446655440000",
+  "recommendations": [
+    {
+      "name": "Топ накопление",
+      "id": "1",
+      "text": "Описание продукта"
+    }
+  ]
+}
 ```
 
 
 ---
 
-# Rule API
+# Управление динамическими правилами
 
 
 ## Создание правила
@@ -376,13 +221,20 @@ POST /rule
 ```
 
 
-## Получение списка правил
+Тело запроса содержит данные правила в формате JSON.
+
+
+---
+
+## Получение всех правил
 
 
 ```
 GET /rule
 ```
 
+
+---
 
 ## Удаление правила
 
@@ -392,12 +244,19 @@ DELETE /rule/{id}
 ```
 
 
+Ответ:
+
+```
+204 No Content
+```
+
+
 ---
 
-# Rule Statistics API
+# Статистика правил
 
 
-Получение статистики срабатывания правил:
+Получение статистики срабатывания:
 
 
 ```
@@ -412,7 +271,7 @@ GET /rule/stats
 {
   "stats": [
     {
-      "ruleId": 1,
+      "rule_id": 1,
       "count": 10
     }
   ]
@@ -433,6 +292,11 @@ POST /management/clear-caches
 ```
 
 
+После выполнения происходит очистка кеша рекомендаций.
+
+
+---
+
 ## Информация о приложении
 
 
@@ -441,73 +305,52 @@ GET /management/info
 ```
 
 
----
-
-# Конфигурация приложения
+Пример ответа:
 
 
-Основные параметры находятся в:
-
-
-```
-src/main/resources/application.properties
-```
-
-
-Пример:
-
-
-```properties
-server.port=8080
-
-
-spring.datasource.url=jdbc:h2:file:./transaction
-
-spring.datasource.driver-class-name=org.h2.Driver
-
-
-rule.datasource.url=jdbc:postgresql://localhost:5432/recommendation_rules
-
-rule.datasource.username=postgres
-
-rule.datasource.password=password
-
-
-telegram.bot.name=starbank_recommendation_bot
-
-telegram.bot.token=token
+```json
+{
+  "name": "recommendation-service1",
+  "version": "0.0.1-SNAPSHOT"
+}
 ```
 
 
 ---
 
-# Переменные окружения
+# Telegram Bot
 
 
-Для запуска в production рекомендуется использовать:
+В проект интегрирован Telegram-бот для получения рекомендаций.
+
+
+Поддерживаемая команда:
 
 
 ```
-SERVER_PORT
+/recommend username
+```
 
 
-SPRING_DATASOURCE_URL
-
-SPRING_DATASOURCE_USERNAME
-
-SPRING_DATASOURCE_PASSWORD
+Пример ответа:
 
 
-RULE_DATASOURCE_URL
-
-RULE_DATASOURCE_USERNAME
-
-RULE_DATASOURCE_PASSWORD
+```
+Здравствуйте Иван Иванов
 
 
-TELEGRAM_BOT_NAME
+Новые продукты для вас:
 
-TELEGRAM_BOT_TOKEN
+- Топ накопление
+- Простой кредит
+```
+
+
+Если пользователь не найден:
+
+
+```
+Пользователь не найден
 ```
 
 
@@ -527,33 +370,81 @@ TELEGRAM_BOT_TOKEN
 Проверка Java:
 
 
-```
+```bash
 java -version
+```
+
+
+Проверка Maven:
+
+
+```bash
+mvn -version
 ```
 
 
 ---
 
-# Сборка проекта
+# Конфигурация приложения
 
 
-Windows:
+Основной файл:
 
 
 ```
+src/main/resources/application.properties
+```
+
+
+Основные параметры:
+
+
+```properties
+server.port=8080
+
+
+spring.datasource.url=jdbc:h2:file:./transaction;ACCESS_MODE_DATA=r
+
+spring.datasource.driver-class-name=org.h2.Driver
+
+
+rule.datasource.url=jdbc:postgresql://localhost:5432/recommendation_rules
+
+rule.datasource.username=postgres
+
+rule.datasource.password=password
+
+rule.datasource.driver-class-name=org.postgresql.Driver
+
+
+telegram.bot.name=starbank_recommendation_bot
+
+telegram.bot.token=<telegram_token>
+```
+
+
+---
+
+# Сборка приложения
+
+
+## Windows
+
+
+```bash
 .\mvnw.cmd clean package
 ```
 
 
-Linux / Mac:
+## Linux / MacOS
 
 
-```
+```bash
 ./mvnw clean package
 ```
 
 
-После успешной сборки создаётся файл:
+После успешной сборки создаётся:
 
 
 ```
@@ -566,11 +457,16 @@ target/recommendation-service1-0.0.1-SNAPSHOT.jar
 # Запуск приложения
 
 
-Команда:
+```bash
+java -jar target/recommendation-service1-0.0.1-SNAPSHOT.jar
+```
+
+
+После запуска приложение доступно:
 
 
 ```
-java -jar target/recommendation-service1-0.0.1-SNAPSHOT.jar
+http://localhost:8080
 ```
 
 
@@ -580,9 +476,7 @@ java -jar target/recommendation-service1-0.0.1-SNAPSHOT.jar
 
 
 1. Открыть проект.
-
 2. Настроить JDK 17.
-
 3. Запустить класс:
 
 
@@ -602,15 +496,15 @@ RecommendationService1Application
 Windows:
 
 
-```
+```bash
 .\mvnw.cmd test
 ```
 
 
-Linux:
+Linux / MacOS:
 
 
-```
+```bash
 ./mvnw test
 ```
 
@@ -629,17 +523,17 @@ Linux:
 - статические правила;
 - динамические правила;
 - сервис рекомендаций;
-- Telegram сервис;
+- REST контроллеры;
 - статистика правил;
-- REST контроллеры.
+- Telegram Bot.
 
 
 ---
 
-# Swagger API Documentation
+# Swagger OpenAPI
 
 
-После запуска приложения документация доступна:
+Документация REST API доступна после запуска:
 
 
 ```
@@ -649,27 +543,42 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
-# Разработка новых рекомендаций
+# Документация проекта
 
 
-Для добавления новой рекомендации:
+Подробная документация находится в Wiki проекта.
+
+
+Доступные страницы:
+
+
+- [Home](https://github.com/kat04-mal/recommendation-service1/wiki)
+
+- [User Story и нефункциональные требования](https://github.com/kat04-mal/recommendation-service1/wiki/User-Story-и-НФ-требования)
+
+- [Requirements Tracking](https://github.com/kat04-mal/recommendation-service1/wiki/Requirements-Tracking)
+
+- [Architecture](https://github.com/kat04-mal/recommendation-service1/wiki/Architecture)
+
+- [REST API](https://github.com/kat04-mal/recommendation-service1/wiki/REST-API)
+
+- [Deployment](https://github.com/kat04-mal/recommendation-service1/wiki/Deployment)
+
+
+---
+
+# Добавление новых рекомендаций
 
 
 ## Статическое правило
 
 
-Создать новый класс в:
+Для добавления нового статического правила:
 
 
-```
-rules
-```
-
-
-Реализовать интерфейс правила.
-
-
-Добавить тест.
+1. Создать новый класс правила.
+2. Реализовать необходимый интерфейс.
+3. Добавить тесты.
 
 
 ---
@@ -677,31 +586,18 @@ rules
 ## Динамическое правило
 
 
-Создать правило через REST API.
+Для добавления нового динамического правила:
 
 
-Правило будет сохранено в PostgreSQL.
-
-
----
-
-# Документация проекта
-
-
-Дополнительная документация находится в Wiki:
-
-
-- описание требований;
-- User Stories;
-- диаграмма вариантов использования;
-- архитектурная диаграмма;
-- Activity Diagram;
-- инструкция развёртывания.
+1. Создать правило через REST API.
+2. Правило сохранится в PostgreSQL.
+3. Оно будет использоваться сервисом рекомендаций.
 
 
 ---
 
 # Автор проекта
-Малеева Екатерина Александровна
 
+
+Малеева Екатерина Александровна
 

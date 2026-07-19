@@ -10,6 +10,12 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Конфигурация кешей приложения.
+ *
+ * <p>Создает кеш результатов рекомендаций
+ * и промежуточных вычислений правил.</p>
+ */
 @Configuration
 public class CacheConfig {
 

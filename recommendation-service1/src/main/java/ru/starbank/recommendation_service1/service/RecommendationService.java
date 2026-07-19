@@ -10,7 +10,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-
+/**
+ * Сервис формирования персональных рекомендаций.
+ *
+ * <p>Запускает статические и динамические правила,
+ * объединяет результаты и сохраняет их в кеш.</p>
+ */
 @Service
 public class RecommendationService {
 
@@ -30,6 +35,12 @@ public class RecommendationService {
         this.recommendationCache = recommendationCache;
     }
 
+    /**
+     * Формирует рекомендации для пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return список подходящих рекомендаций
+     */
     public List<RecommendationDto> getRecommendations(UUID userId) {
 
         List<RecommendationDto> cached =
@@ -66,6 +77,9 @@ public class RecommendationService {
         return result;
     }
 
+    /**
+     * Полностью очищает кеш рекомендаций.
+     */
     public void clearCache() {
 
         recommendationCache.invalidateAll();

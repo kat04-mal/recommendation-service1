@@ -1,13 +1,16 @@
 package ru.starbank.recommendation_service1.rules;
 
 import org.junit.jupiter.api.Test;
+import ru.starbank.recommendation_service1.constants.ProductType;
 import ru.starbank.recommendation_service1.repository.RecommendationRepository;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 class TopSavingRuleTest {
@@ -29,20 +32,39 @@ class TopSavingRuleTest {
     @Test
     void shouldRecommendWhenAmountExactly50000() {
 
-        when(repository.hasProductType(userId, "DEBIT"))
+
+        when(repository.hasProductType(
+                userId,
+                ProductType.DEBIT
+        ))
                 .thenReturn(true);
 
 
-        when(repository.getDepositSum(userId, "SAVING"))
-                .thenReturn(BigDecimal.valueOf(50000));
+        when(repository.getDepositSum(
+                userId,
+                ProductType.SAVING
+        ))
+                .thenReturn(
+                        BigDecimal.valueOf(50000)
+                );
 
 
-        when(repository.getDepositSum(userId, "DEBIT"))
-                .thenReturn(BigDecimal.ZERO);
+        when(repository.getDepositSum(
+                userId,
+                ProductType.DEBIT
+        ))
+                .thenReturn(
+                        BigDecimal.valueOf(1000)
+                );
 
 
-        when(repository.getWithdrawSum(userId, "DEBIT"))
-                .thenReturn(BigDecimal.ZERO);
+        when(repository.getWithdrawSum(
+                userId,
+                ProductType.DEBIT
+        ))
+                .thenReturn(
+                        BigDecimal.ZERO
+                );
 
 
         assertTrue(
@@ -52,53 +74,95 @@ class TopSavingRuleTest {
 
 
 
+
     @Test
     void shouldNotRecommendWhenAmount49999() {
 
-        when(repository.hasProductType(userId, "DEBIT"))
+
+        when(repository.hasProductType(
+                userId,
+                ProductType.DEBIT
+        ))
                 .thenReturn(true);
 
 
-        when(repository.getDepositSum(userId, "SAVING"))
-                .thenReturn(BigDecimal.valueOf(49999));
+        when(repository.getDepositSum(
+                userId,
+                ProductType.SAVING
+        ))
+                .thenReturn(
+                        BigDecimal.valueOf(49999)
+                );
 
 
-        when(repository.getDepositSum(userId, "DEBIT"))
-                .thenReturn(BigDecimal.ZERO);
+        when(repository.getDepositSum(
+                userId,
+                ProductType.DEBIT
+        ))
+                .thenReturn(
+                        BigDecimal.ZERO
+                );
 
 
-        when(repository.getWithdrawSum(userId, "DEBIT"))
-                .thenReturn(BigDecimal.ZERO);
+        when(repository.getWithdrawSum(
+                userId,
+                ProductType.DEBIT
+        ))
+                .thenReturn(
+                        BigDecimal.ZERO
+                );
 
 
-        assertTrue(
-                rule.check(userId).isEmpty()
+        assertFalse(
+                rule.check(userId).isPresent()
         );
     }
+
+
 
 
 
     @Test
     void shouldNotRecommendWhenDebitDepositEqualsWithdraw() {
 
-        when(repository.hasProductType(userId, "DEBIT"))
+
+        when(repository.hasProductType(
+                userId,
+                ProductType.DEBIT
+        ))
                 .thenReturn(true);
 
 
-        when(repository.getDepositSum(userId, "SAVING"))
-                .thenReturn(BigDecimal.valueOf(50000));
+        when(repository.getDepositSum(
+                userId,
+                ProductType.SAVING
+        ))
+                .thenReturn(
+                        BigDecimal.valueOf(50000)
+                );
 
 
-        when(repository.getDepositSum(userId, "DEBIT"))
-                .thenReturn(BigDecimal.valueOf(100000));
+        when(repository.getDepositSum(
+                userId,
+                ProductType.DEBIT
+        ))
+                .thenReturn(
+                        BigDecimal.valueOf(100000)
+                );
 
 
-        when(repository.getWithdrawSum(userId, "DEBIT"))
-                .thenReturn(BigDecimal.valueOf(100000));
+        when(repository.getWithdrawSum(
+                userId,
+                ProductType.DEBIT
+        ))
+                .thenReturn(
+                        BigDecimal.valueOf(100000)
+                );
 
 
-        assertTrue(
-                rule.check(userId).isEmpty()
+        assertFalse(
+                rule.check(userId).isPresent()
         );
     }
+
 }

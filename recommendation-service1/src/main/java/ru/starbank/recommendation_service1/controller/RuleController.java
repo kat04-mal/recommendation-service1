@@ -8,6 +8,12 @@ import ru.starbank.recommendation_service1.dto.rule.RuleResponse;
 import ru.starbank.recommendation_service1.service.RuleService;
 
 
+/**
+ * REST API управления динамическими правилами рекомендаций.
+ *
+ * <p>Позволяет создавать, получать и удалять правила,
+ * хранящиеся в PostgreSQL.</p>
+ */
 @RestController
 @RequestMapping("/rule")
 public class RuleController {
@@ -18,6 +24,12 @@ public class RuleController {
         this.service = service;
     }
 
+    /**
+     * Создание нового динамического правила.
+     *
+     * @param request данные нового правила
+     * @return созданное правило с идентификатором
+     */
     @PostMapping
     public ResponseEntity<RuleResponse> createRule(
             @RequestBody RuleCreateRequest request
@@ -28,6 +40,11 @@ public class RuleController {
         );
     }
 
+    /**
+     * Получение списка всех динамических правил.
+     *
+     * @return список правил
+     */
     @GetMapping
     public ResponseEntity<RuleListResponse> getRules() {
 
@@ -36,6 +53,11 @@ public class RuleController {
         );
     }
 
+    /**
+     * Удаление динамического правила.
+     *
+     * @param id идентификатор правила
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRule(
             @PathVariable("id") Long id

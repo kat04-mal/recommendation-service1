@@ -8,6 +8,12 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
+/**
+ * Конфигурация подключения к базам данных.
+ *
+ * <p>Настраивает основную H2 базу и PostgreSQL
+ * базу динамических правил.</p>
+ */
 @Configuration
 public class DataSourceConfig {
 

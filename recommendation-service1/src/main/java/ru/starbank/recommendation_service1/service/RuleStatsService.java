@@ -11,6 +11,9 @@ import ru.starbank.recommendation_service1.repository.rule.RuleStatsRepository;
 
 import java.util.List;
 
+/**
+ * Сервис формирования статистики срабатывания правил.
+ */
 @Service
 public class RuleStatsService {
 
@@ -48,7 +51,11 @@ public class RuleStatsService {
     }
 
 
-
+    /**
+     * Возвращает количество срабатываний каждого правила.
+     *
+     * @return статистика правил
+     */
     @Transactional(readOnly = true)
     public RuleStatsResponse getStats() {
         List<RuleStatsDto> result =
